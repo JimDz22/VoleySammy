@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏐 Sammy vs Fabián - Vóley Playa</title>
+    <title>🏐 Sammy Vóley Playa</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap');
         
@@ -283,7 +283,7 @@
             gap: 10px;
             z-index: 5;
         }
-        
+
         .touch-btn {
             width: 70px;
             height: 70px;
@@ -297,6 +297,72 @@
             backdrop-filter: blur(5px);
             transition: all 0.2s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) and (pointer: coarse) {
+            .touch-controls {
+                bottom: 30px;
+                left: 30px;
+                gap: 15px;
+            }
+            
+            .touch-btn {
+                width: 90px; 
+                height: 90px;    
+                font-size: 2.8rem;
+                border-width: 4px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            }
+            
+            .touch-btn:active, .touch-btn.active {
+                transform: scale(0.95);
+                background: rgba(255, 107, 157, 0.6);
+            }
+        }
+
+        @media (max-width: 380px) and (pointer: coarse) {
+            .touch-controls {
+                bottom: 20px;
+                left: 20px;
+            }
+            
+            .touch-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-height: 500px) and (pointer: coarse) {
+            .touch-controls {
+                bottom: 15px;
+                left: 15px;
+                flex-direction: row;
+                gap: 12px;
+            }
+            
+            .touch-row {
+                display: flex;
+                gap: 12px;
+            }
+            
+            .touch-btn {
+                width: 65px;
+                height: 65px;
+                font-size: 2rem;
+            }
+        }
+
+        .touch-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .touch-btn:active, .touch-btn.active {
+            background: rgba(255, 107, 157, 0.6);
+            transform: scale(0.95);
         }
         
         .touch-btn:active, .touch-btn.active {
@@ -1549,6 +1615,49 @@
             }
         }
         
+        // Mejorar respuesta táctil en botones
+        document.querySelectorAll('.touch-btn').forEach(btn => {
+            // Prevenir delay de 300ms en móvil
+            btn.style.touchAction = 'manipulation';
+            
+            const action = btn.dataset.action;
+            
+            // Touch events mejorados
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                touchState[action] = true;
+                btn.classList.add('active');
+                
+                // Vibración táctil (si el dispositivo la soporta)
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            }, { passive: false });
+            
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchState[action] = false;
+                btn.classList.remove('active');
+            });
+            
+            // También mantener mouse events para compatibilidad
+            btn.addEventListener('mousedown', (e) => {
+                touchState[action] = true;
+                btn.classList.add('active');
+            });
+            
+            btn.addEventListener('mouseup', (e) => {
+                touchState[action] = false;
+                btn.classList.remove('active');
+            });
+            
+            btn.addEventListener('mouseleave', (e) => {
+                touchState[action] = false;
+                btn.classList.remove('active');
+            });
+        });
+
         function gameLoop() {
             if (!gameRunning && !gameEnded) return;
             
